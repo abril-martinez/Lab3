@@ -13,7 +13,8 @@
 int readADC()
 {
 	
-    AD1CHS  = 0xFFFA;           // analog input channel based on I/O pin 6 (RB3)
+    //AD1CHS  = 0xFFFA;           // analog input channel based on I/O pin 6 (RB3)
+    AD1CHS = 3;
     AD1CON1bits.SAMP = 1;      // start sampling, automatic conversion will follow
     while (!AD1CON1bits.DONE); // wait to complete the conversion
     return ADC1BUF0;           // read the conversion result
@@ -22,6 +23,7 @@ int readADC()
 
 void ADCInitialize() 
 {
+	TRISBbits.TRISB3 = 1;   // RB3 as input
 	AD1PCFGbits.PCFG5 = 0;  // Disable digital input on AN5 (RB3->IO6)
   	AD1CON1 = 0x20E4;     	// auto convert after end of sampling
 	AD1CSSL = 0;          	// no input is scanned

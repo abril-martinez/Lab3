@@ -10,7 +10,7 @@
 // LCD Data connected to RB15 -> RB12, RS is connected to RB7, and E is connected to RB6
 #define LCD_D   LATB
 #define LCD_RS  LATBbits.LATB7
-#define LCD_E   LATBbits.LATB6
+#define LCD_E   LATBbits.LATB6 
 
 // ******************************************************************************************* //
 
