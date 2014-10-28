@@ -60,6 +60,26 @@ void AD_Conversion() {
 	LCDPrintString(value);
 	}	
 
+void PWMInitialize() {
+    //Set up Timer 1 for PWM
+    TMR1 = 0;
+    PR1 = PR_VALUE; // (1/100) / (1/(Fcy)   * 256)
+    T1CON = 0x0030;
+    T1CONbits.TON = 0;    // ____________________________________________>
+
+    //Set up pin RP8 for PWM, using OC1 -- LEFT PWM
+    RPOR4bits.RP8R =  18; //OC1 using RP8
+    OC1R = 0; // PR1 * Duty cycle, which is initialized to 0%
+    OC1RS = 0;
+    OC1CON = 0x0006;
+
+    //Set up pin RP9 for PWM, using OC2 -- RIGHT PWM
+    RPOR4bits.RP9R =  19; //OC2 using RP9
+    OC2R = 0; // PR2 * Duty cycle, which is initialized to 0%
+    OC2RS = 0;
+    OC2CON = 0x0006;
+}
+
 
 int main(void)
 {
@@ -85,7 +105,7 @@ int main(void)
     ADCInitialize();    
 
     // Configure PWM
-   // PWMInitialize();
+    PWMInitialize();
 
  	// Set the directional pins
     TRIS_MOTOR_D = 0;
