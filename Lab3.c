@@ -11,15 +11,14 @@
 #include "adc.h"
 //#include "delay.h"
 
-#define variables
 #define PWM_FREQ                100
 #define PR_VALUE                (57600/PWM_FREQ)-1 //for prescaler of 1:256
 
 
-#define TRIS_MOTOR_D            TRISBbits.TRISB1
-#define TRIS_MOTOR_C            TRISBbits.TRISB2
-#define LAT_MOTOR_D             LATBbits.LATB1
-#define LAT_MOTOR_C             LATBbits.LATB2  
+#define TRIS_MOTOR_1            TRISBbits.TRISB1
+#define TRIS_MOTOR_2            TRISBbits.TRISB2
+#define LAT_MOTOR_1             LATBbits.LATB1
+#define LAT_MOTOR_2             LATBbits.LATB2  
 
 
 // ******************************************************************************************* //
@@ -61,11 +60,11 @@ void AD_Conversion() {
 	}	
 
 void PWMInitialize() {
-    //Set up Timer 1 for PWM
-    TMR1 = 0;
-    PR1 = PR_VALUE; // (1/100) / (1/(Fcy)   * 256)
-    T1CON = 0x0030;
-    T1CONbits.TON = 0;    // ____________________________________________>
+    //Set up Timer 2 for PWM
+    TMR2 = 0;
+    PR2 = PR_VALUE; // (1/100) / (1/(Fcy)   * 256)
+    T2CON = 0x0030;
+    T2CONbits.TON = 0;    // ____________________________________________>
 
     //Set up pin RP8 for PWM, using OC1 -- LEFT PWM
     RPOR4bits.RP8R =  18; //OC1 using RP8
@@ -108,17 +107,17 @@ int main(void)
     PWMInitialize();
 
  	// Set the directional pins
-    TRIS_MOTOR_D = 0;
-    TRIS_MOTOR_C = 0;
-    LAT_MOTOR_D = 1;
-    LAT_MOTOR_C = 1;
-
- 	// Set momentary switch to RB5
-	TRISBbits.TRISB5 = 1;  
+    TRIS_MOTOR_1 = 0;
+    TRIS_MOTOR_2 = 0;
+    LAT_MOTOR_1 = 1;
+    LAT_MOTOR_2 = 1;
 
 	// Motor related variables	
 	int leftDutyCycle;
     int rightDutyCycle;
+
+	// Set momentary switch to RB5
+    TRISBbits.TRISB5 = 1;	
 
 	while(1) 
       { 					
