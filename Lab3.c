@@ -14,10 +14,12 @@
 
 #define TRIS_MOTOR_1            TRISAbits.TRISA0
 #define TRIS_MOTOR_2            TRISAbits.TRISA1
-#define TRIS_POT                TRISBbits.TRISB3
-#define AN_POT                  AD1PCFGbits.PCFG5 
 #define LAT_MOTOR_1             LATAbits.LATA0
 #define LAT_MOTOR_2             LATAbits.LATA1  
+
+#define TRIS_POT                TRISBbits.TRISB3   //(RB3 -> I/O 6)
+#define AN_POT                  AD1PCFGbits.PCFG5 
+
 
 volatile int ADC_value;
 volatile char count;
@@ -67,7 +69,7 @@ void PWMInitialize() {
 }
 
 void ADCInitialize(){
-	AD1PCFG &= 0xFFDF;       // Disable digital input on AN5 (RB3->IO6)
+	AD1PCFG &= 0xFFDF;      // AN5 (RB3->IO6) input pin is analog
 	AD1CON2 = 0;          	// use MUXA, AVss and AVdd are used as Vref+/-
 	AD1CON3 = 0x0101;     	// set TAD to 1, 2*TCY	
   	AD1CON1 = 0x20E4;     	// auto convert after end of sampling
@@ -78,15 +80,14 @@ void ADCInitialize(){
 	IFS0bits.AD1IF = 0; 	// Clear A/D interrupt flag
 	IEC0bits.AD1IE = 1; 	// Enable A/D conversion interrupt
 	AD1CON1bits.ADON = 1; 	// Turn on A/D	
+	done = 0;				// Flag to tell us if we have read new ADC values
 }
 
 int main(void)
 {
-	ADC_value = 0;
-    double	AD_value = 0;
+    double	AD_value;
 	char value[8];
-    done = 0; // Flag to tell us if we have read new ADC values
-	count=0;
+    count=0;
 
 	// Set the directional pins
 	TRIS_POT = 1;      // RB3 Potentiometer (I/O 6)
@@ -118,12 +119,13 @@ int main(void)
 
 	while(1) 
       {		
-	  if(done==1)
+	  if(done)
 		{
-		  AD_value = (ADC_value * 3.3)/1024;	
 		  sprintf(value, "%6d", ADC_value);
     	  LCDMoveCursor(0,0);
           LCDPrintString(value);
+
+		  AD_value = (ADC_value * 3.3)/1024;
 
 			if(AD_value >= 1.65) 
 			{
@@ -193,7 +195,6 @@ void  __attribute__((interrupt,auto_psv)) _ADC1Interrupt(void)
    IFS0bits.AD1IF = 0;
    ADC_value = ADC1BUF0;
    done = 1;
-   AD1CON1bits.ASAM = 0; // Auto-Sample start
 } 
 
 
