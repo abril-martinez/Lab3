@@ -50,24 +50,24 @@ _CONFIG2( IESO_OFF & SOSCSEL_SOSC & WUTSEL_LEG & FNOSC_PRIPLL & FCKSM_CSDCMD & O
 
 void AD_Conversion() {
 
-      char value[8];
+    char value[8];
 
-   // ADC_value = readADC();        
-   // sprintf(value, "%6d", ADC_value);
-   // LCDMoveCursor(0,0);
-   // LCDPrintString(value);
+    ADC_value = readADC();        
+    sprintf(value, "%6d", ADC_value);
+    LCDMoveCursor(0,0);
+    LCDPrintString(value);
 
 	AD_value = (ADC_value * 3.3)/1024;
-    sprintf(value, "%6.2f",AD_value);
-    LCDMoveCursor(0,0);
-	LCDPrintString(value);
+   // sprintf(value, "%6.2f",AD_value);
+    //LCDMoveCursor(0,0);
+	//LCDPrintString(value);
 	}	
 
 void PWMInitialize() {
-    //Set up Timer 2 for PWM
+    //Set up Timer 1 for PWM
     TMR1 = 0;
     PR1 = PR_VALUE; // (1/100) / (1/(Fcy)   * 256)
-    T2CON = 0x0030; // prescale 256
+    T1CON = 0x0030; // prescale 256
    
     //Set up pin RP8 for PWM, using OC1 -- LEFT PWM
     RPOR4bits.RP8R =  18; //OC1 using RP8
@@ -90,6 +90,8 @@ int main(void)
 	ADC_value = 0;
 	AD_value = 0;
 	char value[8];
+    done = 0;
+	count=0;
 
 
     // Configure Change notification of RB5
@@ -118,11 +120,12 @@ int main(void)
     double duty_cycle2;
 
 	// SW1 momentary switch as input
-    TRISBbits.TRISB5 = 1;	
+    TRISBbits.TRISB5 = 1;			
 
 	while(1) 
-      { 					
-	  if(done)
+      {
+   				
+	  if(done==1)
 		{
 			if(AD_value >= 1.65) 
 			{
