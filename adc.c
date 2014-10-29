@@ -26,6 +26,9 @@ void ADCInitialize()
   	AD1CON1 = 0x20E4;     	// auto convert after end of sampling
 	AD1CHS = 0x0005;        // Cofnigure input channels (AN5 ->I/O pin 6 ->RB3)  
 	AD1CSSL = 0;          	// no input is scanned
+	IFS0bits.AD1IF = 0; 	// Clear A/D conversion interrupt
+	IEC0bits.AD1IE = 1; 	// Enable A/D conversion interrupt
+	AD1CON1bits.ADON = 1; 	// Turn on A/D		
 } 
 
 
