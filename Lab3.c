@@ -68,16 +68,15 @@ void PWMInitialize() {
     PR3 = PR_VALUE; // 575
     T3CON = 0x0030; // prescale 256
 
-    //Set up pin RP8 for PWM, using OC1 -- LEFT PWM
-    RPOR4bits.RP8R =  18; //OC1 using RP8
-    OC1R = 0; // PR1 * Duty cycle, which is initialized to 0%
+    //Set up pin RP10 for PWM, using OC1 -- LEFT PWM
+    RPOR5bits.RP10R =  18; //OC1 using RP8
+    OC1R = 0; // PR3 * Duty cycle, which is initialized to 0%
     OC1RS = 0;
     OC1CON = 0x000E; //Timer3
 
-    //Set up pin RP9 for PWM, using OC2 -- RIGHT PWM
-    //RPOR4bits.RP9R =  19; //OC2 using RP9
-    RPOR5bits.RP10R = 19; //OC2 using RP10 (RB10 -> I09)
-    OC2R = 0; // PR2 * Duty cycle, which is initialized to 0%
+    //Set up pin RP11 for PWM, using OC2 -- RIGHT PWM
+    RPOR5bits.RP11R = 19; //OC2 using RP10 (RB10 -> I09)
+    OC2R = 0; // PR3 * Duty cycle, which is initialized to 0%
     OC2RS = 0;
     OC2CON = 0x000E; // Timer3
 
@@ -139,22 +138,66 @@ int main(void)
          LCDPrintString(value);
 		
 
-	/*	 if(AD_value >= 1.65) 
+		 if((ADC_value > 462 || ADC_value == 462) && (ADC_value <562 || ADC_value == 562)) 
 		  {
-		   duty_cycle1 = 1; //motor 1 is on full from 1.65-3.3
-		   duty_cycle2 = (AD_value/(-1.65))+2; //motor 2 decreases
+		   duty_cycle1 = 100;
+		   duty_cycle2 = 100;
 		  }
-			else
-			{
-				duty_cycle1 = (AD_value/1.65); //motor 1 decreases
-				duty_cycle2 = 1; //motor 2 on full from 0-1.65
-			} */
 			
+		 else if((ADC_value > 563 || ADC_value == 563) && (ADC_value <690 || ADC_value == 690)) 
+		  {
+		   duty_cycle1 = 75;
+		   duty_cycle2 = 100;
+		  }
 
+		 else if((ADC_value > 691 || ADC_value == 691) && (ADC_value <818 || ADC_value == 818)) 	
+		 {
+ 		   duty_cycle1 = 50;
+		   duty_cycle2 = 100;
+		 }
+
+		else if((ADC_value > 819 || ADC_value == 819) && (ADC_value <975 || ADC_value == 975)) 	
+		 {
+ 		   duty_cycle1 = 25;
+		   duty_cycle2 = 100;
+		 }
+
+		else if (ADC_value > 975) 	
+		 {
+ 		   duty_cycle1 = 0;
+		   duty_cycle2 = 100;
+		 }	
+
+	 	else if((ADC_value < 461 || ADC_value == 461) && (ADC_value >334 || ADC_value == 334)) 
+		  {
+		   duty_cycle1 = 100;
+		   duty_cycle2 = 75;
+		  }
+			
+		else if((ADC_value < 333 || ADC_value == 333) && (ADC_value >206 || ADC_value == 206)) 
+		  {
+		   duty_cycle1 = 100;
+		   duty_cycle2 = 50;
+		  }
+
+		else if((ADC_value < 205 || ADC_value == 205) && (ADC_value >40 || ADC_value == 40)) 
+		  {
+		   duty_cycle1 = 100;
+		   duty_cycle2 = 25;
+		  }
+		
+	   else if (ADC_value < 40) 
+		  {
+		   duty_cycle1 = 100;
+		   duty_cycle2 = 0;
+		  }
+
+		
 			OC1RS = (int)(PR_VALUE*duty_cycle1); //modifying PWM duty cycle
 			OC1RS = OC1RS / 100;
 			OC2RS = (int)(PR_VALUE*duty_cycle2); //modifying PWM duty cycle
 			OC2RS = OC2RS / 100;
+			
 			sprintf(value, "%3d", duty_cycle1);
 			LCDMoveCursor(1,0);
 			LCDPrintString(value);
